@@ -314,7 +314,8 @@ class CapturaFragment : Fragment() {
             val infoPuntoR = binding.spinnerPuntoR.text.toString()
 
             binding.editTextHora.error = null
-            if(infoPuntoR.isNullOrEmpty()){
+
+            if(infoPuntoR.isNullOrEmpty() && !(dataRescateP.puestosADispo || dataRescateP.voluntarios)){
                 binding.spinnerPuntoR.setError("LLENAR PARA CONTINUAR", icon)
                 binding.spinnerPuntoR.requestFocus()
             } else {
@@ -335,7 +336,7 @@ class CapturaFragment : Fragment() {
             val infoPuntoR = binding.spinnerPuntoR.text.toString()
 
             binding.editTextHora.error = null
-            if(infoPuntoR.isNullOrEmpty()){
+            if(infoPuntoR.isNullOrEmpty() && !(dataRescateP.puestosADispo || dataRescateP.voluntarios)){
                 binding.spinnerPuntoR.setError("LLENAR PARA CONTINUAR", icon)
                 binding.spinnerPuntoR.requestFocus()
             } else {
@@ -361,13 +362,29 @@ class CapturaFragment : Fragment() {
                 popUpInternet()
                 prefManager.setvistasPopUpInternet(true)
             } else {
+
+//                Log.e("Juez",(dataRescateP.juezCalif).toString() )
+//                Log.e("reclu",(dataRescateP.reclusorio).toString() )
+//                Log.e("poliFede",(dataRescateP.policiaFede).toString() )
+//                Log.e("dif",(dataRescateP.dif).toString() )
+//                Log.e("poliEsta",(dataRescateP.policiaEsta).toString() )
+//                Log.e("poliMuni",(dataRescateP.policiaMuni).toString() )
+//                Log.e("Guardia",(dataRescateP.guardiaNaci).toString() )
+//                Log.e("fiscalia",(dataRescateP.fiscalia).toString() )
+//                Log.e("otro",(dataRescateP.otrasAuto).toString() )
+
                 val infoPuntoR = binding.spinnerPuntoR.text.toString()
                 val formatterH = DateTimeFormatter.ofPattern("HH:mm")
                 val currentH = LocalDateTime.now().format(formatterH)
                 binding.editTextHora.setText(currentH)
-
                 binding.editTextHora.error = null
-                if(infoPuntoR.isNullOrEmpty()){
+
+//                dataRescateP.puestosADispo == true or dataRescateP.voluntarios == true
+//                Log.e("puesto a disposición",(dataRescateP.puestosADispo).toString() )
+//                Log.e("voluntario", (dataRescateP.voluntarios).toString())
+//                        && !dataRescateP.puestosADispo && !dataRescateP.voluntarios
+
+                if(infoPuntoR.isNullOrEmpty() && !(dataRescateP.puestosADispo || dataRescateP.voluntarios)){
                     binding.spinnerPuntoR.setError("LLENAR PARA CONTINUAR", icon)
                     binding.spinnerPuntoR.requestFocus()
                 } else {
@@ -439,6 +456,7 @@ class CapturaFragment : Fragment() {
                 dataRescateP.aeropuerto = true
                 if(tipo == 0) dataActivityViewM.buscarAeropuertos()
                 if(tipo == 1) dataRescateP.puntoEstra = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            carretero
             1 -> {
@@ -446,6 +464,7 @@ class CapturaFragment : Fragment() {
                 dataRescateP.carretero = true
                 if(tipo == 0) dataActivityViewM.buscarCarretero()
                 if(tipo == 1) dataRescateP.puntoEstra = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            casa de seguridad
             2 -> {
@@ -453,6 +472,7 @@ class CapturaFragment : Fragment() {
                 dataRescateP.casaSeguridad = true
                 if(tipo == 0) dataActivityViewM.buscarMunicipio()
                 if(tipo == 1) dataRescateP.municipio = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            central de autobuses
             3 -> {
@@ -460,6 +480,7 @@ class CapturaFragment : Fragment() {
                 dataRescateP.centralAutobus = true
                 if(tipo == 0) dataActivityViewM.buscarEstacionAuto()
                 if(tipo == 1) dataRescateP.puntoEstra = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            ferroca
             4 -> {
@@ -467,6 +488,7 @@ class CapturaFragment : Fragment() {
                 dataRescateP.ferrocarril = true
                 if(tipo == 0) dataActivityViewM.buscarFerroviario()
                 if(tipo == 1) dataRescateP.puntoEstra = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            hotel
             5 -> {
@@ -474,16 +496,35 @@ class CapturaFragment : Fragment() {
                 dataRescateP.hotel = true
                 if(tipo == 0) dataActivityViewM.buscarMunicipio()
                 if(tipo == 1) dataRescateP.municipio = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            puestos
             6 -> {
+                val auxDataP = dataRescateP
                 dataRescateP = TipoRescate()
                 dataRescateP.puestosADispo = true
                 if(tipo == 0) showPopUp1(prefManager.getNomTipoRescate()!!)
-                if(tipo == 1) dataRescateP.municipio = binding.spinnerPuntoR.text.toString()
+                if(tipo == 1){
+//                    dataRescateP.municipio = binding.spinnerPuntoR.text.toString()
+
+                    dataRescateP.juezCalif = auxDataP.juezCalif
+                    dataRescateP.reclusorio = auxDataP.reclusorio
+                    dataRescateP.policiaFede = auxDataP.policiaFede
+                    dataRescateP.dif = auxDataP.dif
+                    dataRescateP.policiaEsta = auxDataP.policiaEsta
+                    dataRescateP.policiaMuni = auxDataP.policiaMuni
+                    dataRescateP.guardiaNaci = auxDataP.guardiaNaci
+                    dataRescateP.fiscalia = auxDataP.fiscalia
+                    dataRescateP.otrasAuto = auxDataP.otrasAuto
+                }
+                binding.LLPuntoRescate.visibility = View.GONE
             }
 //            voluntarios
-            7 -> { }
+            7 -> {
+                dataRescateP = TipoRescate()
+                dataRescateP.voluntarios = true
+                binding.LLPuntoRescate.visibility = View.GONE
+            }
 //            otros
             8 -> {
                 dataRescateP = TipoRescate()
@@ -1068,6 +1109,7 @@ class CapturaFragment : Fragment() {
                         prefManager.setPuntoRevision("")
                         binding.spinnerPuntoR.setText("")
                         prefManager.setTipoRescate(0)
+
 //                      SE LLama a la funcion de pasar de vista de fragmento
                         dataActivityViewM.pasarVentana.value = true
                         dialog3.dismiss()

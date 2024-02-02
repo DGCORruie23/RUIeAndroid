@@ -69,7 +69,7 @@ class RescateFamiliaAdapter(
 
             val edad = registro.getEdad()
             val tipo : String
-            if (edad > 18){
+            if (edad > 17){
                 tipo = "A"
                 val typedValue = TypedValue()
                 binding.root.context.theme.resolveAttribute(R.attr.colorBtnF, typedValue, true)

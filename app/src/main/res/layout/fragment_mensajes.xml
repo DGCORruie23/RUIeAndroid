@@ -17,6 +17,7 @@
         android:src="@drawable/ic_whatsapp_48"
         android:backgroundTint="?attr/colorBtnW"
         android:tint="@color/marron"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:maxImageSize="35dp" />

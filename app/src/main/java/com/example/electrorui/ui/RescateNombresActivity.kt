@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -11,6 +12,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.DrawableCompat
 import com.example.electrorui.databinding.ActivityPopupCorreccionesBinding
 import com.example.electrorui.databinding.ActivityRescateNombresBinding
 import com.example.electrorui.ui.adapters.RescateNombresAdapter
@@ -28,16 +31,23 @@ class RescateNombresActivity : AppCompatActivity() {
     private lateinit var binding : ActivityRescateNombresBinding
     private lateinit var nacNombresAdapter : RescateNombresAdapter
     private val dataActivityViewM : RescatesNombres_AVM by viewModels()
+
+    private lateinit var icon : Drawable
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRescateNombresBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        icon = AppCompatResources.getDrawable(this, com.example.electrorui.R.drawable.ic_error_24)!!
+        DrawableCompat.setTint(icon, resources.getColor(com.example.electrorui.R.color.rojo))
+        icon.setBounds(0, 0, icon.intrinsicWidth, icon.intrinsicHeight)
+
         val nacionalidadRecibida = intent.getStringExtra(EXTRA_NACIONALIDAD)
         dataActivityViewM.paisPadre.value = nacionalidadRecibida
         binding.spinnerPAIS.setText(nacionalidadRecibida)
 
-        val nacio  = emptyList<String>()
+        var nacio  = emptyList<String>()
 
         var autocompleteArrayAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, nacio)
         binding.spinnerPAIS.threshold = 1
@@ -67,14 +77,25 @@ class RescateNombresActivity : AppCompatActivity() {
 
 
         dataActivityViewM.paises.observe(this){
+            nacio = it
             binding.spinnerPAIS.setAdapter(ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, it))
             autocompleteArrayAdapter.notifyDataSetChanged()
         }
 
         binding.btnPersona.setOnClickListener {
-            val intentRegistroNombre = Intent(applicationContext, NombresActivity::class.java)
-            intentRegistroNombre.putExtra(NombresActivity.EXTRA_NACIONALIDAD, binding.spinnerPAIS.text.toString())
-            startActivity(intentRegistroNombre)
+
+            val nombrePais = binding.spinnerPAIS.text.toString()
+
+            if(nombrePais in nacio){
+                binding.spinnerPAIS.error = null
+                val intentRegistroNombre = Intent(applicationContext, NombresActivity::class.java)
+                intentRegistroNombre.putExtra(NombresActivity.EXTRA_NACIONALIDAD, binding.spinnerPAIS.text.toString())
+                startActivity(intentRegistroNombre)
+            } else{
+                binding.spinnerPAIS.setError("Nombre Incorrecto, verificalo", icon)
+                binding.spinnerPAIS.requestFocus()
+            }
+
         }
 
         binding.btnGuardar.setOnClickListener {
