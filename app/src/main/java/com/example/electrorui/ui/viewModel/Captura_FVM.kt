@@ -22,6 +22,7 @@ import com.example.electrorui.usecase.GetInfoMasivo
 import com.example.electrorui.usecase.GetMunicipiosByOR
 import com.example.electrorui.usecase.GetRegistrosByIsoCountUC
 import com.example.electrorui.usecase.GetTotalFamilias
+import com.example.electrorui.usecase.SetDatosPendientesAPI
 import com.example.electrorui.usecase.SetMensajeDB
 import com.example.electrorui.usecase.SetRescateAPIUC
 import com.example.electrorui.usecase.SetRescateCompletoDB
@@ -59,6 +60,7 @@ class Captura_FVM @Inject constructor(
     private val setTipoRescateDB: SetTipoRescateDB,
     private val setRescateAPIUC: SetRescateAPIUC,
     private val setRescateC: SetRescateCompletoDB,
+    private val setDatosPendientesAPI: SetDatosPendientesAPI,
 ) : ViewModel(){
 
     val oficinaRepresentacion by lazy { MutableLiveData<String>() }
@@ -289,6 +291,12 @@ class Captura_FVM @Inject constructor(
                 resc_y_Nombres.add(RescateComp(datosRescatePuntoC!!, it))
             }
             setRescateC(resc_y_Nombres)
+        }
+    }
+
+    fun enviarAllRescates(){
+        viewModelScope.launch {
+            setDatosPendientesAPI()
         }
     }
 
