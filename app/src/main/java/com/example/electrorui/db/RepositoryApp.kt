@@ -23,6 +23,7 @@ import com.example.electrorui.db.entityModel.toPaisDB
 import com.example.electrorui.db.entityModel.toUpdateDB
 import com.example.electrorui.networkApi.model.PuntosInterModel
 import com.example.electrorui.networkApi.model.RescateCompModel
+import com.example.electrorui.networkApi.model.UpdateModel
 import com.example.electrorui.networkApi.model.toAPI
 import com.example.electrorui.networkApi.model.toApi
 import com.example.electrorui.networkApi.retrofitService
@@ -84,6 +85,10 @@ class RepositoryApp @Inject constructor(
     suspend fun getAllPuntosInterFromApi() : List<PuntosInter>{
         val response = api.getPuntosInter()
         return response.map { it.toUC() }
+    }
+    suspend fun getVersionFromApi() : UpdateModel {
+        val response = api.getVersion()
+        return response
     }
 
     suspend fun insertRescatesFromApi(registros : List<RescateComp>): RespuestaA{

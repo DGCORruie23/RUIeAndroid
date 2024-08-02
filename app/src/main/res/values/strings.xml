@@ -76,5 +76,6 @@
     <string name="pop_cuantos">Cuántos</string>
     <string name="pop_municipio">Municipio</string>
     <string name="pop_otrasAutor">Otras autoridades</string>
+    <string name="texto3_Actualiza">Esta disponible una nueva actualización\nVe a https://ruie.dgcor.com/descargas para instalar la nueva aplicación</string>
 
 </resources>

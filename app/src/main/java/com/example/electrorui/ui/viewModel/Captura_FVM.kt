@@ -7,6 +7,7 @@ import androidx.core.text.bold
 import androidx.core.text.buildSpannedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.electrorui.networkApi.model.UpdateModel
 import com.example.electrorui.usecase.DelAllFamiliasUC
 import com.example.electrorui.usecase.DelAllNombresUC
 import com.example.electrorui.usecase.GetAeropuertos
@@ -22,6 +23,7 @@ import com.example.electrorui.usecase.GetInfoMasivo
 import com.example.electrorui.usecase.GetMunicipiosByOR
 import com.example.electrorui.usecase.GetRegistrosByIsoCountUC
 import com.example.electrorui.usecase.GetTotalFamilias
+import com.example.electrorui.usecase.GetVersionUC
 import com.example.electrorui.usecase.SetDatosPendientesAPI
 import com.example.electrorui.usecase.SetMensajeDB
 import com.example.electrorui.usecase.SetRescateAPIUC
@@ -37,7 +39,11 @@ import com.example.electrorui.usecase.model.RegistroFamilias
 import com.example.electrorui.usecase.model.Rescate
 import com.example.electrorui.usecase.model.RescateComp
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
@@ -61,6 +67,7 @@ class Captura_FVM @Inject constructor(
     private val setRescateAPIUC: SetRescateAPIUC,
     private val setRescateC: SetRescateCompletoDB,
     private val setDatosPendientesAPI: SetDatosPendientesAPI,
+    private val getVersionUC: GetVersionUC,
 ) : ViewModel(){
 
     val oficinaRepresentacion by lazy { MutableLiveData<String>() }
@@ -84,6 +91,10 @@ class Captura_FVM @Inject constructor(
     val pasarVentana by lazy { MutableLiveData<Boolean>() }
     val etPuntoRescate = MutableLiveData<String>()
     val nomAgente by lazy { MutableLiveData<String>() }
+    val versionM by lazy { MutableLiveData<UpdateModel>() }
+    val mensajeNotif by lazy { MutableLiveData<String>() }
+
+    val conectadoInternet by lazy { MutableLiveData<Boolean>() }
 
 
     fun onCreate(){
@@ -137,6 +148,25 @@ class Captura_FVM @Inject constructor(
             val totalRegistros = getInfoMasivo()
             noRescatados.value = totalRegistros
             masivo.value = totalRegistros >= 40
+
+        }
+    }
+
+    fun verifyInter(){
+        viewModelScope.launch {
+            var code: Int = 0
+            try {
+                withContext(Dispatchers.IO){
+                    val url = URL("https://ruie.dgcor.com/")
+                    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+                    connection.connectTimeout = 10 * 1000
+                    connection.connect()
+                    code = connection.responseCode
+                }
+                conectadoInternet.value = code == 200
+            } catch (e : Exception){
+                conectadoInternet.value = false
+            }
 
         }
     }
@@ -246,6 +276,12 @@ class Captura_FVM @Inject constructor(
         }
     }
 
+    fun buscarActualizacion(){
+        viewModelScope.launch {
+            versionM.value = getVersionUC()
+        }
+    }
+
     fun saveTipoRescate(){
         viewModelScope.launch {
             setTipoRescateDB(listOf(datosBRescate.value!!) )
@@ -291,12 +327,16 @@ class Captura_FVM @Inject constructor(
                 resc_y_Nombres.add(RescateComp(datosRescatePuntoC!!, it))
             }
             setRescateC(resc_y_Nombres)
+
+            Log.e("Guardar Datos", "Se guardaron los datos")
+
+            mensajeNotif.value = setDatosPendientesAPI()
         }
     }
 
     fun enviarAllRescates(){
         viewModelScope.launch {
-            setDatosPendientesAPI()
+            mensajeNotif.value = setDatosPendientesAPI()
         }
     }
 

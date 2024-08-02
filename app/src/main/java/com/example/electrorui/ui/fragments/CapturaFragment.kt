@@ -3,13 +3,16 @@ package com.example.electrorui.ui.fragments
 
 import android.app.Activity
 import android.app.Dialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
+import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.DisplayMetrics
@@ -25,23 +28,25 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.electrorui.R
+import com.example.electrorui.databinding.ActivityPopupActualizacionBinding
 import com.example.electrorui.databinding.ActivityPopupCarreteroBinding
 import com.example.electrorui.databinding.ActivityPopupEnviarBinding
 import com.example.electrorui.databinding.FragmentCapturaBinding
-import com.example.electrorui.databinding.SpinnerItemBinding
 import com.example.electrorui.databinding.ToastLayoutErrorBinding
 import com.example.electrorui.db.PrefManager
 import com.example.electrorui.ui.ConteoRActivity
 import com.example.electrorui.ui.RescateFamiliasActivity
 import com.example.electrorui.ui.RescateNombresActivity
+import com.example.electrorui.ui.SplashScreen
 import com.example.electrorui.ui.adapters.FamiliaAdapter
 import com.example.electrorui.ui.adapters.IsoAdapter
 import com.example.electrorui.ui.viewModel.Captura_FVM
@@ -74,6 +79,7 @@ class CapturaFragment : Fragment() {
     private lateinit var prefManager: PrefManager
     private var dataRescateP = TipoRescate()
     private lateinit var icon : Drawable
+    private var arrayOpc : List<String> = emptyList()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -84,6 +90,7 @@ class CapturaFragment : Fragment() {
         _binding = FragmentCapturaBinding.inflate(inflater, container, false)
         prefManager = PrefManager(requireContext())
 
+        createChannel()
 //     --------------------------------------------------------------------------
 //  --------------------------------------------------------------------------------
 //                       Sección de inicialización de Datos
@@ -118,28 +125,43 @@ class CapturaFragment : Fragment() {
 
         icon.setBounds(0, 0, icon.intrinsicWidth, icon.intrinsicHeight)
 //############## inicializa el estado de conexión a INTERNET ###############
+
 //      Verificar si al momento de abrir esta ventana, hay internet
-        val cm = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork : NetworkInfo? = cm.activeNetworkInfo
-        isConnected = activeNetwork?.isConnectedOrConnecting == true
+//        val cm = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//        val activeNetwork : NetworkInfo? = cm.activeNetworkInfo
+//        isConnected = activeNetwork?.isConnectedOrConnecting == true
 //      Se guarda la info de que el dispositivo tiene internet
-        prefManager.setConnection(isConnected)
-        vistoMensajeInternet = prefManager.vistoPopUInternet()!!
-        if (!isConnected and !vistoMensajeInternet){
+
+        dataActivityViewM.verifyInter()
+
+        dataActivityViewM.conectadoInternet.observe(viewLifecycleOwner){
+            prefManager.setConnection(it)
+            isConnected = it
+
+            vistoMensajeInternet = prefManager.vistoPopUInternet()!!
+            if (!isConnected and !vistoMensajeInternet){
 //          Dialogo para la alerta de ingresos sin internet
-            popUpInternet()
-            prefManager.setvistasPopUpInternet(true)
+                popUpInternet()
+                prefManager.setvistasPopUpInternet(true)
+            } else{
+                //------------ se llama a la funcion para ver si la app esta actualizada ----------
+                dataActivityViewM.buscarActualizacion()
+            }
+
         }
 
-//############## inicializar spinner de Selección de Tipo de Punto --Vacio-- ###############
-//        var dataTipoPunto = emptyList<String>()
-//        val adapterSpinner = ArrayAdapter(
-//            requireActivity().applicationContext,
-//            android.R.layout.simple_spinner_item,
-//            dataTipoPunto
-//        )
-//        adapterSpinner.setDropDownViewResource(android.R.layout.simple_expandable_list_item_1)
-//        binding.spinnerTipo.setAdapter(adapterSpinner)
+
+//############## se muestra el Popup de buscar actualizacion ###############
+        dataActivityViewM.versionM.observe(viewLifecycleOwner){
+            val managerV = requireContext().packageManager
+            val info = managerV.getPackageInfo(requireContext().packageName, PackageManager.GET_ACTIVITIES)
+            val versionName = info.versionName
+
+            if (versionName < it.versionUp){
+//            Toast.makeText(requireContext(), "version ${versionName < "1.0.1"}", Toast.LENGTH_LONG).show()
+                popUpUpdateApp(it.mensajeUp)
+            }
+        }
 
         binding.spinnerTipo.apply {
             setSpinnerAdapter(IconSpinnerAdapter(this))
@@ -223,6 +245,15 @@ class CapturaFragment : Fragment() {
             }
         }
 
+//--------------- Mensaje de Notificacionnes Android -------------------
+
+        dataActivityViewM.mensajeNotif.observe(viewLifecycleOwner){
+            if (!it.isNullOrEmpty()){
+                createSimpleNotif(it)
+                dataActivityViewM.mensajeNotif.value = ""
+            }
+        }
+
 //---------------Spinner seleccion de Punto de rescate -------------------
 
         binding.spinnerTipo.setOnSpinnerItemSelectedListener(
@@ -258,6 +289,7 @@ class CapturaFragment : Fragment() {
                     android.R.layout.simple_spinner_dropdown_item,
                     it)
             )
+            arrayOpc = it
             spinnerTipoRadapter.notifyDataSetChanged()
         }
 
@@ -297,7 +329,7 @@ class CapturaFragment : Fragment() {
             val infoPuntoR = binding.spinnerPuntoR.text.toString()
 
             binding.editTextHora.error = null
-            if(infoPuntoR.isNullOrEmpty()){
+            if(infoPuntoR.isNullOrEmpty() && !(dataRescateP.puestosADispo || dataRescateP.voluntarios)){
                 binding.spinnerPuntoR.setError("LLENAR PARA CONTINUAR", icon)
                 binding.spinnerPuntoR.requestFocus()
             } else {
@@ -314,7 +346,7 @@ class CapturaFragment : Fragment() {
             val infoPuntoR = binding.spinnerPuntoR.text.toString()
 
             binding.editTextHora.error = null
-            if(infoPuntoR.isNullOrEmpty()){
+            if(infoPuntoR.isNullOrEmpty() && !(dataRescateP.puestosADispo || dataRescateP.voluntarios)){
                 binding.spinnerPuntoR.setError("LLENAR PARA CONTINUAR", icon)
                 binding.spinnerPuntoR.requestFocus()
             } else {
@@ -335,7 +367,7 @@ class CapturaFragment : Fragment() {
             val infoPuntoR = binding.spinnerPuntoR.text.toString()
 
             binding.editTextHora.error = null
-            if(infoPuntoR.isNullOrEmpty()){
+            if(infoPuntoR.isNullOrEmpty() && !(dataRescateP.puestosADispo || dataRescateP.voluntarios)){
                 binding.spinnerPuntoR.setError("LLENAR PARA CONTINUAR", icon)
                 binding.spinnerPuntoR.requestFocus()
             } else {
@@ -352,10 +384,12 @@ class CapturaFragment : Fragment() {
 // -------------- Button de Enviar Información ----------------
         binding.btnEnviar.setOnClickListener {
 
-            val cm = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val activeNetwork : NetworkInfo? = cm.activeNetworkInfo
-            isConnected = activeNetwork?.isConnectedOrConnecting == true
-            prefManager.setConnection(isConnected)
+//            val cm = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//            val activeNetwork : NetworkInfo? = cm.activeNetworkInfo
+//            isConnected = activeNetwork?.isConnectedOrConnecting == true
+//            prefManager.setConnection(isConnected)
+            dataActivityViewM.verifyInter()
+
             vistoMensajeInternet = prefManager.vistoPopUInternet()!!
             if (!isConnected and !vistoMensajeInternet){
                 popUpInternet()
@@ -365,19 +399,30 @@ class CapturaFragment : Fragment() {
                 val formatterH = DateTimeFormatter.ofPattern("HH:mm")
                 val currentH = LocalDateTime.now().format(formatterH)
                 binding.editTextHora.setText(currentH)
-
                 binding.editTextHora.error = null
-                if(infoPuntoR.isNullOrEmpty()){
-                    binding.spinnerPuntoR.setError("LLENAR PARA CONTINUAR", icon)
+
+//                ??????? corroborar qu este el dato en el array de los puntos
+                binding.spinnerPuntoR.error = null
+                if (infoPuntoR !in arrayOpc && !(dataRescateP.puestosADispo || dataRescateP.voluntarios)){
+                    binding.spinnerPuntoR.setError("PUNTO INCORRECTO", icon)
                     binding.spinnerPuntoR.requestFocus()
                 } else {
-                    binding.spinnerPuntoR.error = null
 
-                    dataRescateP.puntoEstra = infoPuntoR
-                    verifyData()
-                    showPopUpEnviar()
+                    binding.editTextHora.error = null
+                    if(infoPuntoR.isNullOrEmpty() && !(dataRescateP.puestosADispo || dataRescateP.voluntarios)){
+                        binding.spinnerPuntoR.setError("LLENAR PARA CONTINUAR", icon)
+                        binding.spinnerPuntoR.requestFocus()
+                    } else {
+                        binding.spinnerPuntoR.error = null
+
+                        dataRescateP.puntoEstra = infoPuntoR
+                        verifyData()
+                        showPopUpEnviar()
+
+                    }
 
                 }
+
             }
         }
 
@@ -439,6 +484,7 @@ class CapturaFragment : Fragment() {
                 dataRescateP.aeropuerto = true
                 if(tipo == 0) dataActivityViewM.buscarAeropuertos()
                 if(tipo == 1) dataRescateP.puntoEstra = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            carretero
             1 -> {
@@ -446,6 +492,7 @@ class CapturaFragment : Fragment() {
                 dataRescateP.carretero = true
                 if(tipo == 0) dataActivityViewM.buscarCarretero()
                 if(tipo == 1) dataRescateP.puntoEstra = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            casa de seguridad
             2 -> {
@@ -453,6 +500,7 @@ class CapturaFragment : Fragment() {
                 dataRescateP.casaSeguridad = true
                 if(tipo == 0) dataActivityViewM.buscarMunicipio()
                 if(tipo == 1) dataRescateP.municipio = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            central de autobuses
             3 -> {
@@ -460,6 +508,7 @@ class CapturaFragment : Fragment() {
                 dataRescateP.centralAutobus = true
                 if(tipo == 0) dataActivityViewM.buscarEstacionAuto()
                 if(tipo == 1) dataRescateP.puntoEstra = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            ferroca
             4 -> {
@@ -467,6 +516,7 @@ class CapturaFragment : Fragment() {
                 dataRescateP.ferrocarril = true
                 if(tipo == 0) dataActivityViewM.buscarFerroviario()
                 if(tipo == 1) dataRescateP.puntoEstra = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            hotel
             5 -> {
@@ -474,16 +524,38 @@ class CapturaFragment : Fragment() {
                 dataRescateP.hotel = true
                 if(tipo == 0) dataActivityViewM.buscarMunicipio()
                 if(tipo == 1) dataRescateP.municipio = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            puestos
             6 -> {
+                val auxDataP = dataRescateP
                 dataRescateP = TipoRescate()
                 dataRescateP.puestosADispo = true
                 if(tipo == 0) showPopUp1(prefManager.getNomTipoRescate()!!)
-                if(tipo == 1) dataRescateP.municipio = binding.spinnerPuntoR.text.toString()
+                if(tipo == 1) {
+//                    dataRescateP.municipio = binding.spinnerPuntoR.text.toString()
+
+                    dataRescateP.juezCalif = auxDataP.juezCalif
+                    dataRescateP.reclusorio = auxDataP.reclusorio
+                    dataRescateP.policiaFede = auxDataP.policiaFede
+                    dataRescateP.dif = auxDataP.dif
+                    dataRescateP.policiaEsta = auxDataP.policiaEsta
+                    dataRescateP.policiaMuni = auxDataP.policiaMuni
+                    dataRescateP.guardiaNaci = auxDataP.guardiaNaci
+                    dataRescateP.fiscalia = auxDataP.fiscalia
+                    dataRescateP.otrasAuto = auxDataP.otrasAuto
+
+                    dataRescateP.puntoEstra = ""
+                }
+                binding.LLPuntoRescate.visibility = View.GONE
             }
 //            voluntarios
-            7 -> { }
+            7 -> {
+                dataRescateP = TipoRescate()
+                dataRescateP.voluntarios = true
+                if(tipo == 1) dataRescateP.puntoEstra = ""
+                binding.LLPuntoRescate.visibility = View.GONE
+            }
 //            otros
             8 -> {
                 dataRescateP = TipoRescate()
@@ -1005,8 +1077,8 @@ class CapturaFragment : Fragment() {
         dialog3.setContentView(bindings1.root)
 
         bindings1.btnEnviar.setOnClickListener {
-            dataActivityViewM.GuardarRescateDB()
-            dataActivityViewM.createPin()
+//            dataActivityViewM.GuardarRescateDB()
+
             object : CountDownTimer(1000, 100){
                 override fun onTick(p0: Long) {
                     bindings1.pbEnvirarConteoPopUp.visibility = View.VISIBLE
@@ -1019,14 +1091,16 @@ class CapturaFragment : Fragment() {
             if(isConnected){
 //              Si esta connectado se envia la informacion del rescate al servidor
                 try {
-//                    dataActivityViewM.GuardarRescateDB()
+                    dataActivityViewM.createPin()
+                    dataActivityViewM.GuardarRescateDB()
 //                    dataActivityViewM.GuardarRescateFAPI()
-                    dataActivityViewM.enviarAllRescates()
+//                    dataActivityViewM.enviarAllRescates()
+//                    createSimpleNotif("Se enviaron correctamente los datos")
                 } catch (e : Exception){
 //                  En dado caso que aunque tenga internet y no pueda enviar datos
 //                  Se guarda la informacion en la tabla para envio despues
 //                    dataActivityViewM.GuardarRescateDB()
-
+//                    createSimpleNotif("Hubo un problema con la red y no se enviaron los datos")
 //                  Se eliminan de cache los datos almacenados
                     object : CountDownTimer(1000, 100){
                         override fun onTick(p0: Long) {
@@ -1172,6 +1246,36 @@ class CapturaFragment : Fragment() {
         dialog1.show()
     }
 
+    private fun popUpUpdateApp(info: String) {
+
+        val bindingUpdate = ActivityPopupActualizacionBinding.inflate(layoutInflater)
+        var popUp = Dialog(requireContext())
+
+        popUp.setCancelable(false)
+        popUp.setContentView(bindingUpdate.root)
+
+        bindingUpdate.closeBtnImg.setOnClickListener {
+            popUp.dismiss()
+        }
+
+        if (info == ""){
+
+        } else {
+            bindingUpdate.tvMsg.text = info
+        }
+
+        bindingUpdate.btnOK.setOnClickListener {
+            val url = "http://ruie.dgcor.com/descargas/apk"
+            val i = Intent(Intent.ACTION_VIEW)
+            i.setData(Uri.parse(url))
+            startActivity(i)
+        }
+
+//        bindingUpdate.tvMsg.setText("info")
+
+        popUp.show()
+    }
+
     override fun onResume() {
         super.onResume()
         dataActivityViewM.onCreate()
@@ -1201,6 +1305,39 @@ class CapturaFragment : Fragment() {
     fun Context.hideKeyboard(view: View) {
         val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    fun createChannel(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channel = NotificationChannel(
+                SplashScreen.MY_CHANNEL_ID,
+                "MyRUISChannel",
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = "Informacion envio"
+            }
+
+            val notificationManager : NotificationManager = activity?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    fun createSimpleNotif(info : String){
+
+        var nBuilder = NotificationCompat
+            .Builder(requireContext(), SplashScreen.MY_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_rui)
+            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_rui))
+            .setContentTitle("Datos del RUI")
+            .setContentText("Consulta el envio de datos")
+            .setStyle(
+                NotificationCompat.BigTextStyle().bigText(info)
+            )
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        with(NotificationManagerCompat.from(requireContext())){
+            notify(1, nBuilder.build())
+        }
     }
 
     fun navigateToMensajes() {

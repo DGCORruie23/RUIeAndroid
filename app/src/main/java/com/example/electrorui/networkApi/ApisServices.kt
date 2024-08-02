@@ -7,6 +7,7 @@ import com.example.electrorui.networkApi.model.MunicipiosModel
 import com.example.electrorui.networkApi.model.PaisModel
 import com.example.electrorui.networkApi.model.PuntosInterModel
 import com.example.electrorui.networkApi.model.RescateCompModel
+import com.example.electrorui.networkApi.model.UpdateModel
 import com.example.electrorui.usecase.model.ConteoRapidoComp
 import com.example.electrorui.usecase.model.RespuestaA
 import retrofit2.http.Body
@@ -35,5 +36,8 @@ interface ApisServices {
 
     @POST("registro/insertC")
     suspend fun insertConteo(@Body registros : List<ConteoRapidoCompModel>) : RespuestaA
+
+    @GET("info/updateApp")
+    suspend fun getVersionUpdate() : UpdateModel
 
 }

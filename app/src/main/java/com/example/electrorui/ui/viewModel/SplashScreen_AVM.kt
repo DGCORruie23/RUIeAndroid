@@ -13,7 +13,11 @@ import com.example.electrorui.usecase.GetVerifyUserUC
 import com.example.electrorui.usecase.SetDatosPendientesAPI
 import com.example.electrorui.usecase.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
@@ -112,6 +116,25 @@ class SplashScreen_AVM @Inject constructor(
 //                  Pasa a el Loggin
                     continuar.value = 2
                 }
+            }
+
+        }
+    }
+
+    fun verifyInter(){
+        viewModelScope.launch {
+            var code: Int = 0
+            try {
+                withContext(Dispatchers.IO){
+                    val url = URL("https://ruie.dgcor.com/")
+                    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+                    connection.connectTimeout = 10 * 1000
+                    connection.connect()
+                    code = connection.responseCode
+                }
+                conectadoInternet.value = code == 200
+            } catch (e : Exception){
+                conectadoInternet.value = false
             }
 
         }

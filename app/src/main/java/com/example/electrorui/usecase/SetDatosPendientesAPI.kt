@@ -25,12 +25,14 @@ class SetDatosPendientesAPI @Inject constructor(
                     mensajeF += "Conteo Rapido No se pudo enviar\n"
                 }
             }
+            Log.e("Borrar Datos", "Entro al proceso")
             if ( !registrosCompleto.isNullOrEmpty()) {
-//                Log.e("info Rescate Api", "Entro a funcion")
+                Log.e("Borrar Datos", "Entro a funcion")
                 val respuestaR = repository.insertRescatesFromApi(registrosCompleto)
 
                 if (respuestaR.respuestaAPI.equals("ok")){
                     repository.deleteAllRescateCompletoFromDB()
+                    Log.e("Borrar Datos", "Se eliminaron los datos")
                     mensajeF += "Los datos almacenados sin Conexion de Rescates se ENVIARON\n"
                 } else {
                     mensajeF += "Los Rescates NO se pudieron enviar\n"

@@ -49,14 +49,22 @@ class SplashScreen : AppCompatActivity() {
 
         init()
 
-        val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork : NetworkInfo? = cm.activeNetworkInfo
-        val isConnected : Boolean = activeNetwork?.isConnectedOrConnecting == true
+//        val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//        val activeNetwork : NetworkInfo? = cm.activeNetworkInfo
+//        val isConnected : Boolean = activeNetwork?.isConnectedOrConnecting == true
+//
+//        prefManager.setConnection(isConnected)
+//        prefManager.setvistasPopUpInternet(false)
+//
+//        dataActivityViewM.conectadoInternet.value = isConnected
+        dataActivityViewM.verifyInter()
 
-        prefManager.setConnection(isConnected)
-        prefManager.setvistasPopUpInternet(false)
+        dataActivityViewM.conectadoInternet.observe(this){
+            prefManager.setConnection(it)
+            prefManager.setvistasPopUpInternet(false)
 
-        dataActivityViewM.conectadoInternet.value = isConnected
+            dataActivityViewM.onCreate()
+        }
 
         dataActivityViewM.porcentProgress.observe(this){
             binding.progressBar.progress = it
@@ -96,7 +104,7 @@ class SplashScreen : AppCompatActivity() {
             prefManager.setState(it)
         }
 
-        dataActivityViewM.onCreate()
+
 
     }
 

@@ -7,6 +7,7 @@ import com.example.electrorui.networkApi.model.MunicipiosModel
 import com.example.electrorui.networkApi.model.PaisModel
 import com.example.electrorui.networkApi.model.PuntosInterModel
 import com.example.electrorui.networkApi.model.RescateCompModel
+import com.example.electrorui.networkApi.model.UpdateModel
 import com.example.electrorui.usecase.model.RespuestaA
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -46,6 +47,13 @@ class retrofitService @Inject constructor(
     suspend fun getPuntosInter(): List<PuntosInterModel> {
         return withContext(Dispatchers.IO){
             val response = retrofit.getAllPuntosInter()
+            response
+        }
+    }
+
+    suspend fun getVersion(): UpdateModel {
+        return withContext(Dispatchers.IO){
+            val response = retrofit.getVersionUpdate()
             response
         }
     }
