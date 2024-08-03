@@ -96,6 +96,8 @@ class Captura_FVM @Inject constructor(
 
     val conectadoInternet by lazy { MutableLiveData<Boolean>() }
 
+    val arrayOPC by lazy { MutableLiveData<List<String>>() }
+
 
     fun onCreate(){
         viewModelScope.launch {
@@ -120,16 +122,16 @@ class Captura_FVM @Inject constructor(
 
 
 //  ------- Se colocan a los aeropuertos por defecto ------
-            val auxPI = getAllPuntosIDB()
-            puntoInter.value = auxPI
-
-            var aeropuertos = ArrayList<String>()
-            auxPI?.forEach {
-                if( it.estadoPunto.equals(oficinaRepresentacion.value) and it.tipoPunto.equals("AEREOS") ){
-                    aeropuertos.add(it.nombrePunto)
-                }
-            }
-            puntoRescateNom.value = aeropuertos
+//            val auxPI = getAllPuntosIDB()
+//            puntoInter.value = auxPI
+//
+//            var aeropuertos = ArrayList<String>()
+//            auxPI?.forEach {
+//                if( it.estadoPunto.equals(oficinaRepresentacion.value) and it.tipoPunto.equals("AEREOS") ){
+//                    aeropuertos.add(it.nombrePunto)
+//                }
+//            }
+//            puntoRescateNom.value = aeropuertos
 //          ------------------------------------
 
         }

@@ -224,10 +224,6 @@ class CapturaFragment : Fragment() {
             dataActivityViewM.dataAditional(oficina, prefManager.getUsername()!!)
         }
 
-// --------- Se actualizan los datos a mostrar del spinner --Punto de Rescate--
-        dataActivityViewM.puntoRescateNom.observe(viewLifecycleOwner){
-            puntoRescateNom = it
-        }
 // --------- Se actualiza el dato mostrado en el spinner --Punto de Rescate--
         dataActivityViewM.etPuntoRescate.observe(viewLifecycleOwner){
             binding.spinnerPuntoR.setText(it)
@@ -269,6 +265,7 @@ class CapturaFragment : Fragment() {
 
                 })
 
+        seleccionSpinerTipoDatos(0, 0)
 
 //---------------- spinner de Selección de Tipo de Punto de Rescate-------------
         binding.spinnerPuntoR.setOnItemClickListener { adapterView, view, i, l ->
@@ -289,9 +286,12 @@ class CapturaFragment : Fragment() {
                     android.R.layout.simple_spinner_dropdown_item,
                     it)
             )
+            //############## cargar datos del array de Punto Rescate ###############
             arrayOpc = it
+            puntoRescateNom = it
             spinnerTipoRadapter.notifyDataSetChanged()
         }
+
 
 //############## inicializar el RecyclerView de Nacionalidades ###############
         nacionalidadesAdapter = IsoAdapter( emptyList()) { datos, pos ->
@@ -403,13 +403,13 @@ class CapturaFragment : Fragment() {
 
 //                ??????? corroborar qu este el dato en el array de los puntos
                 binding.spinnerPuntoR.error = null
-                if (infoPuntoR !in arrayOpc && !(dataRescateP.puestosADispo || dataRescateP.voluntarios)){
+                if (infoPuntoR !in arrayOpc && !(dataRescateP.puestosADispo)){
                     binding.spinnerPuntoR.setError("PUNTO INCORRECTO", icon)
                     binding.spinnerPuntoR.requestFocus()
                 } else {
 
                     binding.editTextHora.error = null
-                    if(infoPuntoR.isNullOrEmpty() && !(dataRescateP.puestosADispo || dataRescateP.voluntarios)){
+                    if(infoPuntoR.isNullOrEmpty() && !(dataRescateP.puestosADispo)){
                         binding.spinnerPuntoR.setError("LLENAR PARA CONTINUAR", icon)
                         binding.spinnerPuntoR.requestFocus()
                     } else {
@@ -553,8 +553,12 @@ class CapturaFragment : Fragment() {
             7 -> {
                 dataRescateP = TipoRescate()
                 dataRescateP.voluntarios = true
-                if(tipo == 1) dataRescateP.puntoEstra = ""
-                binding.LLPuntoRescate.visibility = View.GONE
+//                if(tipo == 1) dataRescateP.puntoEstra = ""
+//                binding.LLPuntoRescate.visibility = View.GONE
+
+                if(tipo == 0) dataActivityViewM.buscarCarretero()
+                if(tipo == 1) dataRescateP.puntoEstra = binding.spinnerPuntoR.text.toString()
+                binding.LLPuntoRescate.visibility = View.VISIBLE
             }
 //            otros
             8 -> {
