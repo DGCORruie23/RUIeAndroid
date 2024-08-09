@@ -1,6 +1,7 @@
 package com.example.electrorui.ui.fragments
 
 
+import android.Manifest
 import android.app.Activity
 import android.app.Dialog
 import android.app.NotificationChannel
@@ -28,6 +29,7 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -143,9 +145,14 @@ class CapturaFragment : Fragment() {
 //          Dialogo para la alerta de ingresos sin internet
                 popUpInternet()
                 prefManager.setvistasPopUpInternet(true)
-            } else{
-                //------------ se llama a la funcion para ver si la app esta actualizada ----------
+            } else if (isConnected== true){
                 dataActivityViewM.buscarActualizacion()
+            }
+            else{
+
+                Log.e("Error de internet API", "No se puede conectar")
+                //------------ se llama a la funcion para ver si la app esta actualizada ----------
+
             }
 
         }
@@ -184,11 +191,7 @@ class CapturaFragment : Fragment() {
 
 //############## inicializar spinner de Selección de Punto de Rescate --Vacio-- ###############
         var dataTipoRescate = emptyList<String>()
-        val spinnerTipoRadapter = ArrayAdapter(
-            requireContext(),
-            R.layout.spinner_item,
-            dataTipoRescate
-        )
+        val spinnerTipoRadapter = ArrayAdapter( requireContext(), R.layout.spinner_item, dataTipoRescate )
 
         spinnerTipoRadapter.setDropDownViewResource(R.layout.spinner_item)
         binding.spinnerPuntoR.threshold = 1
@@ -1340,6 +1343,20 @@ class CapturaFragment : Fragment() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         with(NotificationManagerCompat.from(requireContext())){
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return
+            }
             notify(1, nBuilder.build())
         }
     }

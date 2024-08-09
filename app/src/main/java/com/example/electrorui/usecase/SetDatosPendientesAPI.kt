@@ -20,7 +20,7 @@ class SetDatosPendientesAPI @Inject constructor(
 
                 if (respuestaC.respuestaAPI.equals("ok")){
                     repository.deleteAllDataConteoRapidoFromDB()
-                    mensajeF += "Los datos almacenados sin Conexion de Conteo Rapido se ENVIARON\n"
+                    mensajeF += "Los datos almacenados de Conteo Rapido se ENVIARON\n"
                 } else {
                     mensajeF += "Conteo Rapido No se pudo enviar\n"
                 }
@@ -33,7 +33,7 @@ class SetDatosPendientesAPI @Inject constructor(
                 if (respuestaR.respuestaAPI.equals("ok")){
                     repository.deleteAllRescateCompletoFromDB()
                     Log.e("Borrar Datos", "Se eliminaron los datos")
-                    mensajeF += "Los datos almacenados sin Conexion de Rescates se ENVIARON\n"
+                    mensajeF += "Los datos almacenados de Rescates se ENVIARON\n"
                 } else {
                     mensajeF += "Los Rescates NO se pudieron enviar\n"
                 }

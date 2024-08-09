@@ -46,9 +46,11 @@ class StartActivity : AppCompatActivity() {
             if (binding.icVisibility.isActivated){
                 binding.icVisibility.setImageResource(R.drawable.ic_visibility_off_24)
                 binding.editTextPass.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                binding.editTextPass.setSelection(binding.editTextPass.length())
             } else {
                 binding.icVisibility.setImageResource(R.drawable.ic_visibility_on_24)
                 binding.editTextPass.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                binding.editTextPass.setSelection(binding.editTextPass.length())
             }
             binding.icVisibility.setActivated(!binding.icVisibility.isActivated)
         }
