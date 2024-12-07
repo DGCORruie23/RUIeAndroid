@@ -73,4 +73,7 @@ object RoomModule {
     @Provides
     fun provideConteoRapidoCompDao(db : AppRoomDB) = db.getConteoRapido()
 
+    @Singleton
+    @Provides
+    fun provideDisuadidosDao(db : AppRoomDB) = db.getDisuadidos()
 }

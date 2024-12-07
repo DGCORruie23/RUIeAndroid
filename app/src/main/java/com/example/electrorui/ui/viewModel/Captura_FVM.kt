@@ -161,11 +161,12 @@ class Captura_FVM @Inject constructor(
                 withContext(Dispatchers.IO){
                     val url = URL("https://ruie.dgcor.com/")
                     val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
-                    connection.connectTimeout = 10 * 1000
+                    // esperar 1 segundos para verificar
+                    connection.connectTimeout = 1 * 1000
                     connection.connect()
                     code = connection.responseCode
                 }
-                conectadoInternet.value = code == 200
+                conectadoInternet.value = (code == 200)
             } catch (e : Exception){
                 conectadoInternet.value = false
             }
@@ -249,6 +250,48 @@ class Captura_FVM @Inject constructor(
     fun buscarMunicipio(){
         viewModelScope.launch {
             puntoRescateNom.value = municipiosNom.value
+        }
+    }
+
+    fun buscarDisuadidos(){
+        viewModelScope.launch {
+            val auxRN = getFuerzaByOrUC(oficinaRepresentacion.value!!)
+            var disuadidos = ArrayList<String>()
+            auxRN.forEach {
+                if (it.tipoP.equals("Carretero"))
+                    disuadidos.add(it.NomPuntoRevision)
+            }
+
+//            Obtenemos los puntos terrestres de los puntos de internacion y se agregan los datos
+            val auxPI = puntoInter.value
+            auxPI?.forEach {
+                if( it.estadoPunto.equals(oficinaRepresentacion.value) and it.tipoPunto.equals("TERRESTRES")){
+                    disuadidos.add(it.nombrePunto)
+                }
+            }
+
+            auxPI?.forEach {
+                if( it.estadoPunto.equals(oficinaRepresentacion.value) and it.tipoPunto.equals("AEREOS")){
+                    disuadidos.add(it.nombrePunto)
+                }
+            }
+
+            auxRN.forEach {
+                if (it.tipoP.equals("Volanta Móvil"))
+                    disuadidos.add(it.NomPuntoRevision)
+            }
+
+            auxRN.forEach {
+                if (it.tipoP.equals("Ferroviario"))
+                    disuadidos.add(it.NomPuntoRevision)
+            }
+
+            auxRN.forEach {
+                if (it.tipoP.equals("Central de autobús"))
+                    disuadidos.add(it.NomPuntoRevision)
+            }
+
+            puntoRescateNom.value = disuadidos
         }
     }
 

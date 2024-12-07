@@ -1,6 +1,7 @@
 package com.example.electrorui.networkApi
 
 import com.example.electrorui.networkApi.model.ConteoRapidoCompModel
+import com.example.electrorui.networkApi.model.DisuadidosModel
 import com.example.electrorui.networkApi.model.FuerzaModel
 import com.example.electrorui.networkApi.model.LoginModel
 import com.example.electrorui.networkApi.model.MunicipiosModel
@@ -36,6 +37,9 @@ interface ApisServices {
 
     @POST("registro/insertC")
     suspend fun insertConteo(@Body registros : List<ConteoRapidoCompModel>) : RespuestaA
+
+    @POST("registro/insertD")
+    suspend fun insertDisuadidos(@Body registro : List<DisuadidosModel>) : RespuestaA
 
     @GET("info/updateApp")
     suspend fun getVersionUpdate() : UpdateModel

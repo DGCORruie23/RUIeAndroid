@@ -2,6 +2,7 @@ package com.example.electrorui.db
 
 import com.example.electrorui.db.dao.ConteoRapidoCompDao
 import com.example.electrorui.db.dao.DatosRegistroDao
+import com.example.electrorui.db.dao.DisuadidosDao
 import com.example.electrorui.db.dao.FuerzaDao
 import com.example.electrorui.db.dao.MensajeDao
 import com.example.electrorui.db.dao.MunicipiosDao
@@ -12,22 +13,17 @@ import com.example.electrorui.db.dao.RegistroNombresDao
 import com.example.electrorui.db.dao.RescateCompDao
 import com.example.electrorui.db.dao.RescateDao
 import com.example.electrorui.db.dao.UsuarioDao
-import com.example.electrorui.db.entityModel.FuerzaEntity
-import com.example.electrorui.db.entityModel.PaisEntity
-import com.example.electrorui.db.entityModel.RegistroFamiliasEntity
-import com.example.electrorui.db.entityModel.RegistroNombresEntity
 import com.example.electrorui.db.entityModel.UsuarioEntity
 import com.example.electrorui.db.entityModel.toDB
 import com.example.electrorui.db.entityModel.toFuerzaDB
 import com.example.electrorui.db.entityModel.toPaisDB
 import com.example.electrorui.db.entityModel.toUpdateDB
-import com.example.electrorui.networkApi.model.PuntosInterModel
-import com.example.electrorui.networkApi.model.RescateCompModel
 import com.example.electrorui.networkApi.model.UpdateModel
 import com.example.electrorui.networkApi.model.toAPI
 import com.example.electrorui.networkApi.model.toApi
 import com.example.electrorui.networkApi.retrofitService
 import com.example.electrorui.usecase.model.ConteoRapidoComp
+import com.example.electrorui.usecase.model.Disuadidos
 import com.example.electrorui.usecase.model.Fuerza
 import com.example.electrorui.usecase.model.Iso
 import com.example.electrorui.usecase.model.Mensaje
@@ -64,6 +60,7 @@ class RepositoryApp @Inject constructor(
     private val rescateCompDao: RescateCompDao,
     private val mensajeDao: MensajeDao,
     private val conteoRapidoCompDao: ConteoRapidoCompDao,
+    private val disuadidosDao: DisuadidosDao,
 ) {
 //  Obtener datos del Api de Retrofit
     suspend fun getUserFromApi(user : User) : User{
@@ -97,6 +94,10 @@ class RepositoryApp @Inject constructor(
 
     suspend fun insertConteosFromApi(registros : List<ConteoRapidoComp>) : RespuestaA{
        return api.setConteos(registros.map { it.toAPI() } )
+    }
+
+    suspend fun insertDisuadidosFromApi(registro : List<Disuadidos>) : RespuestaA{
+        return api.setDisuadidos(registro.map { it.toAPI() })
     }
 //    ---------------------------------------------
 //--------- Obtener datos de la Base de Datos DB ---------------------
@@ -161,6 +162,11 @@ class RepositoryApp @Inject constructor(
 
     suspend fun getAllMensajesFromDB() : List<Mensaje>{
         val response = mensajeDao.getAll()
+        return response.map { it.toUC() }
+    }
+
+    suspend fun getAllDisuadidosFromDB() : List<Disuadidos>{
+        val response = disuadidosDao.getAll()
         return response.map { it.toUC() }
     }
 
@@ -262,6 +268,10 @@ class RepositoryApp @Inject constructor(
         mensajeDao.insert(mensaje.map { it.toDB() })
     }
 
+    suspend fun insertDisuadidosToDB( mensaje : List<Disuadidos>) {
+        disuadidosDao.insert(mensaje.map { it.toDB() })
+    }
+
     suspend fun insertDataConteoRapidoToDB( registros : List<ConteoRapidoComp>) {
         conteoRapidoCompDao.insert(registros.map { it.toDB() })
     }
@@ -311,6 +321,9 @@ class RepositoryApp @Inject constructor(
     }
     suspend fun deleteAllRescateCompletoFromDB() {
         rescateCompDao.deleteAll()
+    }
+    suspend fun deleteAllDisuadidosFromDB() {
+        disuadidosDao.deleteAll()
     }
     suspend fun deleteRegistroNombreIdFromDB(item : RegistroNombres ) {
         registroNombresDao.deleteEntry(item.toUpdateDB())

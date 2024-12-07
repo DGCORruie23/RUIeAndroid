@@ -1,6 +1,7 @@
 package com.example.electrorui.networkApi
 
 import com.example.electrorui.networkApi.model.ConteoRapidoCompModel
+import com.example.electrorui.networkApi.model.DisuadidosModel
 import com.example.electrorui.networkApi.model.FuerzaModel
 import com.example.electrorui.networkApi.model.LoginModel
 import com.example.electrorui.networkApi.model.MunicipiosModel
@@ -67,6 +68,13 @@ class retrofitService @Inject constructor(
     suspend fun setConteos(registros : List<ConteoRapidoCompModel>): RespuestaA{
         return withContext(Dispatchers.IO){
            val response = retrofit.insertConteo(registros)
+            response
+        }
+    }
+
+    suspend fun setDisuadidos(registros : List<DisuadidosModel>): RespuestaA{
+        return withContext(Dispatchers.IO){
+            val response = retrofit.insertDisuadidos(registros)
             response
         }
     }

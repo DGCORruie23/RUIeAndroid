@@ -20,7 +20,7 @@ object NetworkModule {
     @Provides
     fun provideRetrofit(): Retrofit{
         return Retrofit.Builder()
-//            .baseUrl("http://192.168.8.15:8080/")
+//            .baseUrl("http://192.168.0.21:8080/")
 //            .baseUrl("https://ruie.dgcvm.com/")
 //            .baseUrl("https://172.16.16.166/")
             .baseUrl("https://ruie.dgcor.com/")

@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.example.electrorui.db.dao.ConteoRapidoCompDao
 import com.example.electrorui.db.dao.DatosRegistroDao
+import com.example.electrorui.db.dao.DisuadidosDao
 import com.example.electrorui.db.dao.FuerzaDao
 import com.example.electrorui.db.dao.MensajeDao
 import com.example.electrorui.db.dao.MunicipiosDao
@@ -16,6 +17,7 @@ import com.example.electrorui.db.dao.RescateDao
 import com.example.electrorui.db.dao.UsuarioDao
 import com.example.electrorui.db.entityModel.ConteoRapidoCompEntity
 import com.example.electrorui.db.entityModel.DatosRegistroEntity
+import com.example.electrorui.db.entityModel.DisuadidosEntity
 import com.example.electrorui.db.entityModel.FuerzaEntity
 import com.example.electrorui.db.entityModel.MensajeEntity
 import com.example.electrorui.db.entityModel.MunicipiosEntity
@@ -41,6 +43,7 @@ import com.example.electrorui.db.entityModel.UsuarioEntity
         RescateCompEntity::class,
         MensajeEntity::class,
         ConteoRapidoCompEntity::class,
+        DisuadidosEntity::class,
     ),
     version = 1,
     exportSchema = false
@@ -58,4 +61,5 @@ abstract class AppRoomDB : RoomDatabase() {
     abstract fun getRescateComp(): RescateCompDao
     abstract fun getMensaje(): MensajeDao
     abstract fun getConteoRapido(): ConteoRapidoCompDao
+    abstract fun getDisuadidos(): DisuadidosDao
 }

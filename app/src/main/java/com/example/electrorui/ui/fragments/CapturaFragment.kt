@@ -46,6 +46,7 @@ import com.example.electrorui.databinding.FragmentCapturaBinding
 import com.example.electrorui.databinding.ToastLayoutErrorBinding
 import com.example.electrorui.db.PrefManager
 import com.example.electrorui.ui.ConteoRActivity
+import com.example.electrorui.ui.OptionActivity
 import com.example.electrorui.ui.RescateFamiliasActivity
 import com.example.electrorui.ui.RescateNombresActivity
 import com.example.electrorui.ui.SplashScreen
@@ -166,7 +167,11 @@ class CapturaFragment : Fragment() {
 
             if (versionName < it.versionUp){
 //            Toast.makeText(requireContext(), "version ${versionName < "1.0.1"}", Toast.LENGTH_LONG).show()
-                popUpUpdateApp(it.mensajeUp)
+                popUpUpdateApp(it.mensajeUp, 0)
+            } else {
+                if (it.info){
+                    popUpUpdateApp(it.mensajeUp, 1)
+                }
             }
         }
 
@@ -176,10 +181,10 @@ class CapturaFragment : Fragment() {
                 arrayListOf(
                     IconSpinnerItem(text = "AEROPUERTO", icon= icon1),
                     IconSpinnerItem(text = "CARRETERO", icon= icon2),
-                    IconSpinnerItem(text = "CASA DE SEGURIDAD", icon= icon3),
+                    IconSpinnerItem(text = "DISUADIDOS", icon= icon3),
                     IconSpinnerItem(text = "CENTRAL DE AUTOBUSES", icon= icon4),
                     IconSpinnerItem(text = "FERROCARRIL", icon= icon5),
-                    IconSpinnerItem(text = "HOTEL", icon= icon6),
+                    IconSpinnerItem(text = "VISITAS DE VERIFICACIÓN\nHOTEL\nCASA DE SEGURIDAD", icon= icon6),
                     IconSpinnerItem(text = "PUESTOS A DISPOSICIÓN", icon= icon7),
                     IconSpinnerItem(text = "VOLUNTARIOS", icon= icon8),
 //                    IconSpinnerItem(text = "OTRO", icon=icon9)
@@ -339,7 +344,7 @@ class CapturaFragment : Fragment() {
                 binding.spinnerPuntoR.error = null
                 verifyData()
                 dataActivityViewM.saveTipoRescate()
-                startActivity(Intent(requireContext(),ConteoRActivity::class.java))
+                startActivity(Intent(requireContext(),OptionActivity::class.java))
             }
         }
 // -------------- Button Agregar Rescate Nacionalidad ----------------
@@ -497,11 +502,11 @@ class CapturaFragment : Fragment() {
                 if(tipo == 1) dataRescateP.puntoEstra = binding.spinnerPuntoR.text.toString()
                 binding.LLPuntoRescate.visibility = View.VISIBLE
             }
-//            casa de seguridad
+//            casa de seguridad / DISUADIDOS
             2 -> {
                 dataRescateP = TipoRescate()
                 dataRescateP.casaSeguridad = true
-                if(tipo == 0) dataActivityViewM.buscarMunicipio()
+                if(tipo == 0) dataActivityViewM.buscarDisuadidos()
                 if(tipo == 1) dataRescateP.municipio = binding.spinnerPuntoR.text.toString()
                 binding.LLPuntoRescate.visibility = View.VISIBLE
             }
@@ -665,6 +670,9 @@ class CapturaFragment : Fragment() {
             bindings.checkboxPoliciaM.isChecked = false
             bindings.checkboxGN.isChecked = false
             bindings.checkboxFiscalia.isChecked = false
+            bindings.checkboxSEMAR.isChecked = false
+            bindings.checkboxOtras.isChecked = false
+
         }
 
         bindings.checkboxReclusorio.setOnClickListener {
@@ -676,6 +684,8 @@ class CapturaFragment : Fragment() {
             bindings.checkboxPoliciaM.isChecked = false
             bindings.checkboxGN.isChecked = false
             bindings.checkboxFiscalia.isChecked = false
+            bindings.checkboxSEMAR.isChecked = false
+            bindings.checkboxOtras.isChecked = false
         }
 
         bindings.checkboxPoliciaF.setOnClickListener {
@@ -687,6 +697,8 @@ class CapturaFragment : Fragment() {
             bindings.checkboxPoliciaM.isChecked = false
             bindings.checkboxGN.isChecked = false
             bindings.checkboxFiscalia.isChecked = false
+            bindings.checkboxSEMAR.isChecked = false
+            bindings.checkboxOtras.isChecked = false
         }
 
         bindings.checkboxDif.setOnClickListener {
@@ -698,6 +710,8 @@ class CapturaFragment : Fragment() {
             bindings.checkboxPoliciaM.isChecked = false
             bindings.checkboxGN.isChecked = false
             bindings.checkboxFiscalia.isChecked = false
+            bindings.checkboxSEMAR.isChecked = false
+            bindings.checkboxOtras.isChecked = false
         }
 
         bindings.checkboxPoliciaE.setOnClickListener {
@@ -709,6 +723,8 @@ class CapturaFragment : Fragment() {
             bindings.checkboxPoliciaM.isChecked = false
             bindings.checkboxGN.isChecked = false
             bindings.checkboxFiscalia.isChecked = false
+            bindings.checkboxSEMAR.isChecked = false
+            bindings.checkboxOtras.isChecked = false
         }
 
         bindings.checkboxPoliciaM.setOnClickListener {
@@ -720,6 +736,8 @@ class CapturaFragment : Fragment() {
             bindings.checkboxPoliciaM.isChecked = true
             bindings.checkboxGN.isChecked = false
             bindings.checkboxFiscalia.isChecked = false
+            bindings.checkboxSEMAR.isChecked = false
+            bindings.checkboxOtras.isChecked = false
         }
 
         bindings.checkboxGN.setOnClickListener {
@@ -731,6 +749,8 @@ class CapturaFragment : Fragment() {
             bindings.checkboxPoliciaM.isChecked = false
             bindings.checkboxGN.isChecked = true
             bindings.checkboxFiscalia.isChecked = false
+            bindings.checkboxSEMAR.isChecked = false
+            bindings.checkboxOtras.isChecked = false
         }
 
         bindings.checkboxFiscalia.setOnClickListener {
@@ -742,6 +762,34 @@ class CapturaFragment : Fragment() {
             bindings.checkboxPoliciaM.isChecked = false
             bindings.checkboxGN.isChecked = false
             bindings.checkboxFiscalia.isChecked = true
+            bindings.checkboxSEMAR.isChecked = false
+            bindings.checkboxOtras.isChecked = false
+        }
+
+        bindings.checkboxOtras.setOnClickListener {
+            bindings.checkboxJuez.isChecked = false
+            bindings.checkboxReclusorio.isChecked = false
+            bindings.checkboxPoliciaF.isChecked = false
+            bindings.checkboxDif.isChecked = false
+            bindings.checkboxPoliciaE.isChecked = false
+            bindings.checkboxPoliciaM.isChecked = false
+            bindings.checkboxGN.isChecked = false
+            bindings.checkboxFiscalia.isChecked = false
+            bindings.checkboxSEMAR.isChecked = false
+            bindings.checkboxOtras.isChecked = true
+        }
+
+        bindings.checkboxSEMAR.setOnClickListener {
+            bindings.checkboxJuez.isChecked = false
+            bindings.checkboxReclusorio.isChecked = false
+            bindings.checkboxPoliciaF.isChecked = false
+            bindings.checkboxDif.isChecked = false
+            bindings.checkboxPoliciaE.isChecked = false
+            bindings.checkboxPoliciaM.isChecked = false
+            bindings.checkboxGN.isChecked = false
+            bindings.checkboxFiscalia.isChecked = false
+            bindings.checkboxSEMAR.isChecked = true
+            bindings.checkboxOtras.isChecked = false
         }
 
         bindings.checkPuestos.setOnClickListener {
@@ -1117,6 +1165,8 @@ class CapturaFragment : Fragment() {
                         override fun onFinish() {
                             bindings1.pbEnvirarConteoPopUp.visibility = View.GONE
 
+                            prefManager.setTipoRescate(0)
+
 //                          Se settean los valores en Cero de los datos guardados
                             binding.spinnerTipo.selectItemByIndex(prefManager.getTipoRescate()!!)
                             binding.spinnerPuntoR.setText(prefManager.getPuntoRevision())
@@ -1127,7 +1177,6 @@ class CapturaFragment : Fragment() {
 
                             binding.spinnerPuntoR.setText("")
                             prefManager.setPuntoRevision("")
-                            prefManager.setTipoRescate(0)
 
 //                       SE LLama a la funcion de pasar de vista de fragmento
                             dataActivityViewM.pasarVentana.value = true
@@ -1152,6 +1201,7 @@ class CapturaFragment : Fragment() {
                     override fun onFinish() {
                         bindings1.pbEnvirarConteoPopUp.visibility = View.GONE
 //                      Se settean los valores en Cero de los datos guardados
+                        prefManager.setTipoRescate(0)
                         binding.spinnerTipo.selectItemByIndex(prefManager.getTipoRescate()!!)
 //                        binding.spinnerPuntoR.setText(prefManager.getPuntoRevision())
                         binding.LLPuntoRescate.visibility = View.GONE
@@ -1161,7 +1211,6 @@ class CapturaFragment : Fragment() {
 //                        dataActivityViewM.puntoRescateNom.value = ""
                         prefManager.setPuntoRevision("")
                         binding.spinnerPuntoR.setText("")
-                        prefManager.setTipoRescate(0)
 //                      SE LLama a la funcion de pasar de vista de fragmento
                         dataActivityViewM.pasarVentana.value = true
                         dialog3.dismiss()
@@ -1253,22 +1302,29 @@ class CapturaFragment : Fragment() {
         dialog1.show()
     }
 
-    private fun popUpUpdateApp(info: String) {
+    private fun popUpUpdateApp(info: String, soloNotif: Int) {
 
         val bindingUpdate = ActivityPopupActualizacionBinding.inflate(layoutInflater)
         var popUp = Dialog(requireContext())
 
-        popUp.setCancelable(false)
+        when(soloNotif){
+            0 -> {
+                popUp.setCancelable(false)
+                bindingUpdate.btnOK.visibility = View.VISIBLE
+            }
+            1 -> {
+                popUp.setCancelable(true)
+                bindingUpdate.btnOK.visibility = View.GONE
+                bindingUpdate.editTextLaberl1.setText("Aviso")
+                bindingUpdate.tvMsg.text = info
+            }
+        }
+
+
         popUp.setContentView(bindingUpdate.root)
 
         bindingUpdate.closeBtnImg.setOnClickListener {
             popUp.dismiss()
-        }
-
-        if (info == ""){
-
-        } else {
-            bindingUpdate.tvMsg.text = info
         }
 
         bindingUpdate.btnOK.setOnClickListener {

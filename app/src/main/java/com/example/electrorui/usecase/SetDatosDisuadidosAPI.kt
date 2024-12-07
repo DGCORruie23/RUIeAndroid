@@ -1,0 +1,54 @@
+package com.example.electrorui.usecase
+
+import android.util.Log
+import com.example.electrorui.db.RepositoryApp
+import com.example.electrorui.usecase.model.ConteoRapidoComp
+import com.example.electrorui.usecase.model.Disuadidos
+import com.example.electrorui.usecase.model.RescateComp
+import javax.inject.Inject
+
+class SetDatosDisuadidosAPI @Inject constructor(
+    private val repository : RepositoryApp
+) {
+    suspend operator fun invoke(registros : List<Disuadidos>): String {
+//        val registrosConteo = repository.getAllDataConteoRapidoFromDB()
+//        val registrosCompleto = repository.getAllRescateCompletoFromDB()
+        var mensajeF = ""
+        try {
+            if ( !registros.isNullOrEmpty()) {
+                repository.insertDisuadidosFromApi(registros)
+            } else {
+                mensajeF += "Error al enviar ${"sin datos"}"
+            }
+//            if ( !registrosConteo.isNullOrEmpty()) {
+////                Log.e("info Conteo Api", "Entro a funcion")
+//                val respuestaC = repository.insertConteosFromApi(registrosConteo)
+//
+//                if (respuestaC.respuestaAPI.equals("ok")){
+//                    repository.deleteAllDataConteoRapidoFromDB()
+//                    mensajeF += "Los datos almacenados de Conteo Rapido se ENVIARON\n"
+//                } else {
+//                    mensajeF += "Conteo Rapido No se pudo enviar\n"
+//                }
+//            }
+//            Log.e("Borrar Datos", "Entro al proceso")
+//            if ( !registrosCompleto.isNullOrEmpty()) {
+//                Log.e("Borrar Datos", "Entro a funcion")
+//                val respuestaR = repository.insertRescatesFromApi(registrosCompleto)
+//
+//                if (respuestaR.respuestaAPI.equals("ok")){
+//                    repository.deleteAllRescateCompletoFromDB()
+//                    Log.e("Borrar Datos", "Se eliminaron los datos")
+//                    mensajeF += "Los datos almacenados de Rescates se ENVIARON\n"
+//                } else {
+//                    mensajeF += "Los Rescates NO se pudieron enviar\n"
+//                }
+//            }
+        }catch (e : Exception){
+            Log.e("error al insertar API", e.toString())
+            mensajeF += "Error al enviar ${e.toString()}"
+        }
+
+        return mensajeF
+    }
+}

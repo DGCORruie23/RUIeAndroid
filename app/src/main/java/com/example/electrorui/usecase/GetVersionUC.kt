@@ -14,7 +14,7 @@ class GetVersionUC @Inject constructor(
         return if(versionUP != null){
             versionUP
         } else {
-            val nullVersion = UpdateModel("", "")
+            val nullVersion = UpdateModel("", "", false)
             nullVersion
         }
     }

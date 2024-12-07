@@ -8,17 +8,18 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fb_conteo_rapido"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginEnd="4dp"
+        android:contentDescription="@string/info_floating_button"
+        android:scaleType="fitCenter"
+        app:fabSize="mini"
+        android:src="@drawable/ic_conteo_rapido_60"
+        android:tint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="@dimen/margin_basic2"
-        android:layout_marginEnd="@dimen/margin_basic05"
-        android:scaleType="center"
-        app:maxImageSize="35dp"
-        android:contentDescription="@string/info_floating_button"
-        android:tint="@color/white"
-        android:src="@drawable/ic_conteo_rapido_60"/>
+        app:maxImageSize="25dp"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,7 +52,7 @@
                 android:textAllCaps="true"
                 android:textColor="?attr/txtBar"
                 android:textColorHint="?attr/txtBar"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:layout_marginTop="-7dp"
                 android:layout_marginBottom="1dp"/>
 
@@ -171,7 +172,7 @@
 
                 <com.skydoves.powerspinner.PowerSpinnerView
                     android:id="@+id/spinnerTipo"
-                    android:layout_width="200dp"
+                    android:layout_width="250dp"
                     android:layout_height="wrap_content"
                     android:background="?attr/bgAll"
                     android:gravity="center"
@@ -179,13 +180,13 @@
                     android:text="Información"
                     android:textColor="?attr/txtT"
                     android:textColorHint="@color/gris_claro"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     app:spinner_arrow_gravity="end"
                     app:spinner_arrow_padding="6dp"
                     app:spinner_divider_color="@color/marron"
                     app:spinner_divider_show="true"
                     app:spinner_divider_size="1dp"
-                    app:spinner_item_height="60dp"
+                    app:spinner_item_height="70dp"
                     app:spinner_popup_animation="normal"
                     app:spinner_popup_background="?attr/bgAll"
                     app:spinner_popup_elevation="14dp"/>
@@ -356,7 +357,7 @@
                                             android:gravity="center"
                                             android:text="NACIONALIDAD"
                                             android:textColor="?attr/colorBtnN"
-                                            android:textSize="16sp"
+                                            android:textSize="15sp"
                                             android:textStyle="bold" />
                                     </RelativeLayout>
                                 </RelativeLayout>
@@ -459,7 +460,7 @@
                                             android:gravity="center"
                                             android:text="FAMILIA"
                                             android:textColor="?attr/colorBtnF"
-                                            android:textSize="16sp"
+                                            android:textSize="15sp"
                                             android:textStyle="bold" />
                                     </RelativeLayout>
                                 </RelativeLayout>
@@ -545,7 +546,7 @@
                             android:gravity="center"
                             android:text="ENVIAR"
                             android:textColor="?attr/colorBtn"
-                            android:textSize="16sp"
+                            android:textSize="15sp"
                             android:textStyle="bold" />
                     </RelativeLayout>
                 </RelativeLayout>

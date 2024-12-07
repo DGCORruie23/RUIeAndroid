@@ -76,6 +76,9 @@
     <string name="pop_cuantos">Cuántos</string>
     <string name="pop_municipio">Municipio</string>
     <string name="pop_otrasAutor">Otras autoridades</string>
-    <string name="texto3_Actualiza">Esta disponible una nueva actualización\nVe a https://ruie.dgcor.com/descargas para instalar la nueva aplicación</string>
+    <string name="texto3_Actualiza">El RUIe ha mejorado para facilitarte la captura de "Rescates".\n¡Descárgalo, instálalo y actualízate!.</string>
+    <string name="masivoRapido">Ingresa Conteo Rapido del Masivo</string>
+    <string name="disuacionesT">Ingresa Numero de Disuadidos por punto</string>
 
 </resources>
+<!--    <string name="texto3_Actualiza">Esta disponible una nueva actualización\nVe a https://ruie.dgcor.com/descargas/ para instalar la nueva aplicación</string>-->

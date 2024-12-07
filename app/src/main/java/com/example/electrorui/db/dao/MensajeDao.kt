@@ -7,7 +7,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.electrorui.db.entityModel.MensajeEntity
-import com.example.electrorui.db.entityModel.PaisEntity
 
 @Dao
 interface MensajeDao {
