@@ -87,6 +87,10 @@ class RepositoryApp @Inject constructor(
         val response = api.getVersion()
         return response
     }
+    suspend fun verifyInterFromApi() : Boolean{
+        val response = api.verifyInternet()
+        return response
+    }
 
     suspend fun insertRescatesFromApi(registros : List<RescateComp>): RespuestaA{
         return api.setRescates(registros.map { it.toAPI() } )

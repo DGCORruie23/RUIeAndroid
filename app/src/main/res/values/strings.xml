@@ -21,7 +21,7 @@
     <string name="SplasS_t1">Utiliza el RUI electrónico para el registro de datos de la población migrante rescatada en México. \n\n¡Únete y contribuye a agilizar la operación migratoria a lo largo del país!</string>
     <string name="SplasS_t2">¡Datos puntuales, verificados y accesibles!</string>
     <string name="SplasS_direcciones">Dirección General de Control y Verificación Migratoria \nDirección General de Coordinación de Oficinas de Representación</string>
-    <string name="msj_resumen">Mesaje de resumen</string>
+    <string name="msj_resumen">Mensaje de resumen</string>
 
     <string-array name="tipo_rescate">
         <item>Selecciona qué tipo de rescate</item>
@@ -79,6 +79,6 @@
     <string name="texto3_Actualiza">El RUIe ha mejorado para facilitarte la captura de "Rescates".\n¡Descárgalo, instálalo y actualízate!.</string>
     <string name="masivoRapido">Ingresa Conteo Rapido del Masivo</string>
     <string name="disuacionesT">Ingresa Numero de Disuadidos por punto</string>
+    <string name="info">Acerca de:</string>
 
-</resources>
-<!--    <string name="texto3_Actualiza">Esta disponible una nueva actualización\nVe a https://ruie.dgcor.com/descargas/ para instalar la nueva aplicación</string>-->
+</resources><!--    <string name="texto3_Actualiza">Esta disponible una nueva actualización\nVe a https://ruie.dgcor.com/descargas/ para instalar la nueva aplicación</string>-->

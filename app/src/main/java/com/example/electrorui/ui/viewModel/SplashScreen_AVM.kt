@@ -9,6 +9,7 @@ import com.example.electrorui.usecase.GetAllMunicipios
 import com.example.electrorui.usecase.GetAllPaisesInitUC
 import com.example.electrorui.usecase.GetAllPuntosIApi
 import com.example.electrorui.usecase.GetUserUC
+import com.example.electrorui.usecase.GetVerifyInterUC
 import com.example.electrorui.usecase.GetVerifyUserUC
 import com.example.electrorui.usecase.SetDatosPendientesAPI
 import com.example.electrorui.usecase.model.User
@@ -29,6 +30,7 @@ class SplashScreen_AVM @Inject constructor(
     private val getAllFuerzaUC: GetAllFuerzaUC,
     private val getAllPuntosIApi: GetAllPuntosIApi,
     private val setDatosPendientesAPI: SetDatosPendientesAPI,
+    private val getVerifyInter: GetVerifyInterUC,
 
     ): ViewModel() {
     val porcentProgress by lazy { MutableLiveData<Int>() }
@@ -123,20 +125,25 @@ class SplashScreen_AVM @Inject constructor(
 
     fun verifyInter(){
         viewModelScope.launch {
-            var code: Int = 0
-            try {
-                withContext(Dispatchers.IO){
-                    val url = URL("https://ruie.dgcor.com/")
-                    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
-                    connection.connectTimeout = 10 * 1000
-                    connection.connect()
-                    code = connection.responseCode
-                }
-                conectadoInternet.value = code == 200
-            } catch (e : Exception){
-                conectadoInternet.value = false
-            }
-
+            val internet = getVerifyInter()
+            conectadoInternet.postValue(internet)
         }
+
+//        viewModelScope.launch {
+//            var code: Int = 0
+//            try {
+//                withContext(Dispatchers.IO){
+//                    val url = URL("https://ruie.dgcor.com/")
+//                    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+//                    connection.connectTimeout = 10 * 1000
+//                    connection.connect()
+//                    code = connection.responseCode
+//                }
+//                conectadoInternet.value = code == 200
+//            } catch (e : Exception){
+//                conectadoInternet.value = false
+//            }
+//
+//        }
     }
 }

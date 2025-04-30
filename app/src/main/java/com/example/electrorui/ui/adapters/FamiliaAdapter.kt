@@ -29,7 +29,8 @@ class FamiliaAdapter(
         val registro = registroByFamilia[position]
         holder.bind(registro)
         holder.itemView.setOnClickListener {
-            familiasClickedListener(registro, position) // Se modifico esta linea lambda
+//            familiasClickedListener(registro, position) // Se modifico esta linea lambda
+            familiasClickedListener(registro, registro.numFam) // Se modifico esta linea lambda
         }
     }
 

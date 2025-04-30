@@ -2,10 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".ui.fragments.InfoFragment">
+    tools:context=".ui.AboutActivity">
+
 
     <LinearLayout
         android:id="@+id/linearLayout3"
@@ -31,25 +32,20 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:fontFamily="@font/montserrat"
-            android:hint="Jesus García Gonzáles"
+            android:text="Acerca de la App:"
             android:textSize="26sp" />
 
         <TextView
             android:id="@+id/textViewC2"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:fontFamily="@font/montserrat"
-            android:text="Ultimo envio de información: 14:20 12/12/25"
+            android:text="Desarrollada en su totalidad por:\nChristia Rodriguez Caudillo\nEn la Dirección General de Coodinación de\nOficinas de Representación"
             android:textSize="14sp" />
 
-        <Button
-            android:id="@+id/btnEditarInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/margin_basic1"
-            android:text="editar información" />
     </LinearLayout>
 
 
@@ -68,21 +64,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/margin_basic1"
-            android:text="Información de rescates"
+            android:text="Más Información"
             android:textColor="@color/white"
             android:textSize="25sp" />
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnAsistencia"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/buttonCerrarSesion"
-        android:text="Centro de Asistencia"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+
 
     <Button
         android:id="@+id/buttonCerrarSesion"

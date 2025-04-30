@@ -9,11 +9,19 @@
         android:id="@+id/navigation_dashboard"
         android:name="com.example.electrorui.ui.fragments.CapturaFragment"
         android:label="@string/title_1_window"
-        tools:layout="@layout/fragment_captura" />
+        tools:layout="@layout/fragment_captura">
+        <action
+            android:id="@+id/action_fragmentA_to_fragmentB"
+            app:destination="@+id/navigation_notifications"/>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.electrorui.ui.fragments.MensajesFragment"
         android:label="@string/title_2_window"
-        tools:layout="@layout/fragment_mensajes" />
+        tools:layout="@layout/fragment_mensajes">
+        <action
+            android:id="@+id/action_fragmentB_to_fragmentA"
+            app:destination="@+id/navigation_dashboard"/>
+    </fragment>
 </navigation>

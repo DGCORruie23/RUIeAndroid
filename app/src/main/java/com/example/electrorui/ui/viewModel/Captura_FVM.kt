@@ -23,6 +23,7 @@ import com.example.electrorui.usecase.GetInfoMasivo
 import com.example.electrorui.usecase.GetMunicipiosByOR
 import com.example.electrorui.usecase.GetRegistrosByIsoCountUC
 import com.example.electrorui.usecase.GetTotalFamilias
+import com.example.electrorui.usecase.GetVerifyInterUC
 import com.example.electrorui.usecase.GetVersionUC
 import com.example.electrorui.usecase.SetDatosPendientesAPI
 import com.example.electrorui.usecase.SetMensajeDB
@@ -68,6 +69,7 @@ class Captura_FVM @Inject constructor(
     private val setRescateC: SetRescateCompletoDB,
     private val setDatosPendientesAPI: SetDatosPendientesAPI,
     private val getVersionUC: GetVersionUC,
+    private val getVerifyInternet: GetVerifyInterUC,
 ) : ViewModel(){
 
     val oficinaRepresentacion by lazy { MutableLiveData<String>() }
@@ -113,7 +115,11 @@ class Captura_FVM @Inject constructor(
 //
 //            numerosFamilias.value = List(totalFam){ it + 1}
             numerosFamilias.value = getTotalFamilias()
-            numFamilia.value = numerosFamilias.value!!.size + 1
+
+//            numFamilia.value = numerosFamilias.value!!.size + 1
+//            numFamilia.value = numerosFamilias.value!!.last().numFam ?: 0
+
+            numFamilia.value = if (numerosFamilias.value!!.isEmpty()) 0 else numerosFamilias.value!!.last().numFam
 
 //            numFamilia.value = 1
             val totalRegistros = getInfoMasivo()
@@ -156,21 +162,8 @@ class Captura_FVM @Inject constructor(
 
     fun verifyInter(){
         viewModelScope.launch {
-            var code: Int = 0
-            try {
-                withContext(Dispatchers.IO){
-                    val url = URL("https://ruie.dgcor.com/")
-                    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
-                    // esperar 1 segundos para verificar
-                    connection.connectTimeout = 1 * 1000
-                    connection.connect()
-                    code = connection.responseCode
-                }
-                conectadoInternet.value = (code == 200)
-            } catch (e : Exception){
-                conectadoInternet.value = false
-            }
-
+            val internet = getVerifyInternet()
+            conectadoInternet.postValue(internet)
         }
     }
 
@@ -238,10 +231,16 @@ class Captura_FVM @Inject constructor(
             val auxRN = getFuerzaByOrUC(oficinaRepresentacion.value!!)
             var estacionBus = ArrayList<String>()
 
-
             auxRN.forEach {
                 if (it.tipoP.equals("Central de autobús"))
                     estacionBus.add(it.NomPuntoRevision)
+            }
+
+            if(estacionBus.isEmpty()){
+                auxRN.forEach {
+                    if (it.tipoP.equals("Central de Autobús"))
+                        estacionBus.add(it.NomPuntoRevision)
+                }
             }
             puntoRescateNom.value = estacionBus
         }
@@ -440,8 +439,8 @@ class Captura_FVM @Inject constructor(
 //                        }
                     }
                     else if (infoPunto?.casaSeguridad == true){
-                        appendLine("Casa de Seguridad")
-                        appendLine("Municipio: ${infoPunto.municipio}")
+                        appendLine("Reincidentes / Disuadidos")
+                        appendLine("${infoPunto.municipio}")
 //                        if (infoPunto.presuntosDelincuentes){
 //                            appendLine("Presuntos Delincuentes: ${infoPunto.numPresuntosDelincuentes}")
 //                            appendLine()
@@ -466,9 +465,11 @@ class Captura_FVM @Inject constructor(
 //                        }
                     }
                     else if (infoPunto?.hotel == true){
-                        appendLine("Hotel")
+                        appendLine("Visitas de Verificación\n"+
+                                "Hotel\n"+
+                                "Casa de Seguridad")
 //                        appendLine("Nombre: ${infoPunto.nombreHotel}")
-                        appendLine("Municipio: ${infoPunto.municipio}")
+                        appendLine("${infoPunto.municipio}")
 //                        if (infoPunto.presuntosDelincuentes){
 //                            appendLine("Presuntos Delincuentes: ${infoPunto.numPresuntosDelincuentes}")
 //                            appendLine()

@@ -92,7 +92,7 @@ class RescateNombresActivity : AppCompatActivity() {
                 intentRegistroNombre.putExtra(NombresActivity.EXTRA_NACIONALIDAD, binding.spinnerPAIS.text.toString())
                 startActivity(intentRegistroNombre)
             } else{
-                binding.spinnerPAIS.setError("Nombre Incorrecto, verificalo", icon)
+                binding.spinnerPAIS.setError("Nacionalidad Incorrecta, verificala", icon)
                 binding.spinnerPAIS.requestFocus()
             }
 

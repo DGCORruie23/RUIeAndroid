@@ -42,15 +42,15 @@ class InfoFragment : Fragment() {
             startActivity(loginIntent)
 
         }
-        binding.btnEditarInfo.setOnClickListener {
-            Toast.makeText(requireContext(), "Funcion por implementar", Toast.LENGTH_SHORT).show()
-        }
-        binding.btnAsistencia.setOnClickListener {
-            Toast.makeText(requireContext(), "Funcion por implementar", Toast.LENGTH_SHORT).show()
-        }
-        binding.btnQuestion.setOnClickListener {
-            Toast.makeText(requireContext(), "Funcion por implementar", Toast.LENGTH_SHORT).show()
-        }
+//        binding.btnEditarInfo.setOnClickListener {
+//            Toast.makeText(requireContext(), "Funcion por implementar", Toast.LENGTH_SHORT).show()
+//        }
+//        binding.btnAsistencia.setOnClickListener {
+//            Toast.makeText(requireContext(), "Funcion por implementar", Toast.LENGTH_SHORT).show()
+//        }
+//        binding.btnQuestion.setOnClickListener {
+//            Toast.makeText(requireContext(), "Funcion por implementar", Toast.LENGTH_SHORT).show()
+//        }
 
         return root
     }

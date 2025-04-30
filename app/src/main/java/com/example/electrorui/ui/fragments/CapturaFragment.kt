@@ -1,6 +1,5 @@
 package com.example.electrorui.ui.fragments
 
-
 import android.Manifest
 import android.app.Activity
 import android.app.Dialog
@@ -32,11 +31,13 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.electrorui.R
 import com.example.electrorui.databinding.ActivityPopupActualizacionBinding
@@ -61,7 +62,8 @@ import com.skydoves.powerspinner.OnSpinnerItemSelectedListener
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-
+import androidx.core.view.isVisible
+import com.example.electrorui.ui.AboutActivity
 
 @AndroidEntryPoint
 class CapturaFragment : Fragment() {
@@ -181,7 +183,7 @@ class CapturaFragment : Fragment() {
                 arrayListOf(
                     IconSpinnerItem(text = "AEROPUERTO", icon= icon1),
                     IconSpinnerItem(text = "CARRETERO", icon= icon2),
-                    IconSpinnerItem(text = "DISUADIDOS", icon= icon3),
+                    IconSpinnerItem(text = "REINCIDENTES\nDISUADIDOS", icon= icon3),
                     IconSpinnerItem(text = "CENTRAL DE AUTOBUSES", icon= icon4),
                     IconSpinnerItem(text = "FERROCARRIL", icon= icon5),
                     IconSpinnerItem(text = "VISITAS DE VERIFICACIÓN\nHOTEL\nCASA DE SEGURIDAD", icon= icon6),
@@ -192,6 +194,20 @@ class CapturaFragment : Fragment() {
             getSpinnerRecyclerView().layoutManager = GridLayoutManager(context, 1)
             selectItemByIndex(0) // select a default item.
             lifecycleOwner = viewLifecycleOwner
+        }
+
+        var longClickCount = 0
+        binding.tvResc1.setOnLongClickListener {
+            longClickCount++
+            if (longClickCount in 5..7) { binding.fbInfo.visibility = if (binding.fbInfo.isVisible) View.GONE else View.VISIBLE }
+            true
+        }
+        binding.tvResc1.setOnClickListener {
+            longClickCount = 0
+            binding.fbInfo.visibility = View.GONE
+        }
+        binding.fbInfo.setOnClickListener {
+            startActivity(Intent(requireContext(),AboutActivity::class.java))
         }
 
 //############## inicializar spinner de Selección de Punto de Rescate --Vacio-- ###############
@@ -273,7 +289,7 @@ class CapturaFragment : Fragment() {
 
                 })
 
-        seleccionSpinerTipoDatos(0, 0)
+//        seleccionSpinerTipoDatos(0, 0)
 
 //---------------- spinner de Selección de Tipo de Punto de Rescate-------------
         binding.spinnerPuntoR.setOnItemClickListener { adapterView, view, i, l ->
@@ -385,7 +401,7 @@ class CapturaFragment : Fragment() {
                 verifyData()
 
                 val intentRegistroFamilias = Intent(requireContext(), RescateFamiliasActivity::class.java)
-                intentRegistroFamilias.putExtra( RescateFamiliasActivity.EXTRA_NOM_FAMILIA, dataActivityViewM.numFamilia.value)
+                intentRegistroFamilias.putExtra( RescateFamiliasActivity.EXTRA_NOM_FAMILIA, dataActivityViewM.numFamilia.value!! + 1)
                 startActivity(intentRegistroFamilias)
             }
         }
@@ -411,7 +427,10 @@ class CapturaFragment : Fragment() {
 
 //                ??????? corroborar qu este el dato en el array de los puntos
                 binding.spinnerPuntoR.error = null
+
+//                Toast.makeText(requireContext(), arrayOpc.toString(), Toast.LENGTH_LONG).show()
                 if (infoPuntoR !in arrayOpc && !(dataRescateP.puestosADispo)){
+//                if (dataActivityViewM.puntoRescateNom.value?.contains(infoPuntoR) != true && !(dataRescateP.puestosADispo)){
                     binding.spinnerPuntoR.setError("PUNTO INCORRECTO", icon)
                     binding.spinnerPuntoR.requestFocus()
                 } else {
@@ -443,6 +462,7 @@ class CapturaFragment : Fragment() {
 //            if (it){
 //                navigateToMensajes()
 //            }
+//            findNavController().navigate(R.id.action_fragmentA_to_fragmentB)
         }
 
         dataActivityViewM.onCreate()
@@ -480,7 +500,7 @@ class CapturaFragment : Fragment() {
 
     private fun navigateToFamiliaA(datos: Int) {
         val intentRegistroFamilias = Intent(requireContext(), RescateFamiliasActivity::class.java)
-        intentRegistroFamilias.putExtra( RescateFamiliasActivity.EXTRA_NOM_FAMILIA, datos + 1)
+        intentRegistroFamilias.putExtra( RescateFamiliasActivity.EXTRA_NOM_FAMILIA, datos)
         startActivity(intentRegistroFamilias)
     }
 
@@ -1208,12 +1228,15 @@ class CapturaFragment : Fragment() {
                         dataActivityViewM.numerosFamilias.value = emptyList()
                         dataActivityViewM.datosIso.value = emptyList()
                         dataActivityViewM.delAllDatos()
+                        createSimpleNotif("Se enviaron correctamente los datos")
 //                        dataActivityViewM.puntoRescateNom.value = ""
                         prefManager.setPuntoRevision("")
                         binding.spinnerPuntoR.setText("")
 //                      SE LLama a la funcion de pasar de vista de fragmento
                         dataActivityViewM.pasarVentana.value = true
                         dialog3.dismiss()
+
+                        findNavController().navigate(R.id.action_fragmentA_to_fragmentB)
                     }
 
                 }.start()
@@ -1328,7 +1351,7 @@ class CapturaFragment : Fragment() {
         }
 
         bindingUpdate.btnOK.setOnClickListener {
-            val url = "http://ruie.dgcor.com/descargas/apk"
+            val url = "http://ruie2025.dgcor.com/descargas/apk"
             val i = Intent(Intent.ACTION_VIEW)
             i.setData(Uri.parse(url))
             startActivity(i)
@@ -1371,21 +1394,27 @@ class CapturaFragment : Fragment() {
     }
 
     fun createChannel(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val channel = NotificationChannel(
-                SplashScreen.MY_CHANNEL_ID,
-                "MyRUISChannel",
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                description = "Informacion envio"
-            }
-
-            val notificationManager : NotificationManager = activity?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            SplashScreen.MY_CHANNEL_ID,
+            "MyRUISChannel",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Informacion envio"
         }
+
+        val notificationManager : NotificationManager = activity?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     fun createSimpleNotif(info : String){
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+                // Si no hay permiso, no intentes mostrar la notificación
+                return
+            }
+        }
 
         var nBuilder = NotificationCompat
             .Builder(requireContext(), SplashScreen.MY_CHANNEL_ID)
@@ -1415,11 +1444,6 @@ class CapturaFragment : Fragment() {
             }
             notify(1, nBuilder.build())
         }
-    }
-
-    fun navigateToMensajes() {
-        Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main).navigate(R.id.navigation_notifications)
-//        (activity as? MainActivity)?.navigateToNavBarDestination(R.id.navigation_notifications)
     }
 }
 

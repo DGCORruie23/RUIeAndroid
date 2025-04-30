@@ -8,14 +8,14 @@ plugins {
 
 android {
     namespace = "com.example.electrorui"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.electrorui"
         minSdk = 28
         targetSdk = 33
         versionCode = 1
-        versionName = "1.0.6"
+        versionName = "1.0.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

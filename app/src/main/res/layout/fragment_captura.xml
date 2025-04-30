@@ -21,6 +21,20 @@
         app:maxImageSize="25dp"
         />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fb_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/info"
+        android:scaleType="fitCenter"
+        android:src="@drawable/baseline_info_24"
+        android:tint="@color/azul"
+        app:fabSize="mini"
+        app:maxImageSize="25dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -34,6 +48,7 @@
             android:background="?attr/bgBar">
 
             <TextView
+                android:id="@+id/tvResc1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
